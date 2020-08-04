@@ -9,35 +9,41 @@ import json
 
 with open('settings.json', 'r') as fp:
     jData = json.load(fp)
-    src_row_start           = jData["src"]["row_start"]
-    src_premise_start       = jData["src"]["premise_start"]
-    src_premise_end         = jData["src"]["premise_end"]
-    src_procedure_start     = jData["src"]["procedure_start"]
-    src_procedure_end       = jData["src"]["procedure_end"]
-    src_confirmation_start  = jData["src"]["confirmation_start"]
-    src_confirmation_end    = jData["src"]["confirmation_end"]
-    dst_row_start           = jData["dst"]["row_start"]
-    dst_premise             = jData["dst"]["premise"]
-    dst_procedure           = jData["dst"]["procedure"]
-    dst_confirmation        = jData["dst"]["confirmation"]
+    src_book                = jData['src']['book']
+    src_row                 = jData['src']['row']
+    src_premise             = jData['src']['premise']
+    src_procedure           = jData['src']['procedure']
+    src_confirmation        = jData['src']['confirmation']
+    filter_level            = jData['src']['filter_level']
+    filter_xxxxx            = jData['src']['filter_xxxxx']
+    dst_book                = jData['dst']['book']
+    dst_row                 = jData['dst']['row']
+    dst_premise             = jData['dst']['premise']
+    dst_procedure           = jData['dst']['procedure']
+    dst_confirmation        = jData['dst']['confirmation']
 
 
 def main():
     src = openpyxl.load_workbook('./source_test_data.xlsx')
     dst = openpyxl.load_workbook('./template.xlsx')
 
-    srcSheet = src[src.sheetnames[0]]
-    dstSheet = dst[dst.sheetnames[0]]
+    srcSheet = src[src.sheetnames[src_book['sheet']]]
+    dstSheet = dst[dst.sheetnames[dst_book['sheet']]]
 
-    dstColumn = dst_row_start
+    dstColumn = dst_row['start']
 
-    for row in range(src_row_start, srcSheet.max_row):
-        """ 
-        if (srcSheet.cell(row=row, column=1).value >= 1):
-            continue
-        """
+    for row in range(src_row['start'], srcSheet.max_row):
+
+        if (filter_level['enable']):
+            if (srcSheet.cell(row=row, column=filter_level['column']).value >= filter_level['input']):
+                continue
+        
+        if (filter_xxxxx['enable']):
+            if (srcSheet.cell(row=row, column=filter_xxxxx['column']).value >= filter_xxxxx['input']):
+                continue
+
         value = ''
-        for column in range(src_premise_start, src_premise_end):
+        for column in range(src_premise['start'], src_premise['end']):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
                 value += '・'
@@ -48,7 +54,7 @@ def main():
 
         value = ''
         num = 1
-        for column in range(src_procedure_start, src_procedure_end):
+        for column in range(src_procedure['start'], src_procedure['end']):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
                 value += str(num)
@@ -60,7 +66,7 @@ def main():
         dstSheet.cell(row=dstColumn, column=dst_procedure).alignment = openpyxl.styles.Alignment(wrapText=True)
         
         value = ''
-        for column in range(src_confirmation_start, src_confirmation_end):
+        for column in range(src_confirmation['start'], src_confirmation['end']):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
                 value += '・'
