@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 ~*
+dust_test_data.xlsx
