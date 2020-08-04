@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!python3
 # coding: utf-8
 
 
@@ -7,61 +7,53 @@ import openpyxl
 
 
 def main():
-    shutil.copy("./template.xlsx", "./dust_test_data.xlsx")
     src = openpyxl.load_workbook('../source_test_data.xlsx')
-    dst = openpyxl.load_workbook('./dust_test_data.xlsx')
-
-    """ src.active """
-    src.template = False
-    """ dst.active """
-    dst.template = False
-
-
-    print('[S]SOURCE-INFO')
-    print(type(src))
-    print(src.sheetnames)
-    print(src[src.sheetnames[0]].max_row)
-    print(src[src.sheetnames[0]].max_column)
-    print('[E]SOURCE-INFO')
-    print('[S]DUST-INFO')
-    print(type(dst))
-    print(dst.sheetnames)
-    print(dst[dst.sheetnames[0]].max_row)
-    print(dst[dst.sheetnames[0]].max_column)
-    print('[E]DUST-INFO')
-
+    dst = openpyxl.load_workbook('./template.xlsx')
 
     srcSheet = src[src.sheetnames[0]]
     dstSheet = dst[dst.sheetnames[0]]
 
-    for row in range(1,srcSheet.max_row):
-        print(type(srcSheet.cell(row=row, column=1).value))
-        print(srcSheet.cell(row=row, column=1).value)
+    dstColumn = 3
+
+    for row in range(2, srcSheet.max_row):
+
+        if (srcSheet.cell(row=row, column=1).value >= 1):
+            continue
 
         value = ''
         for column in range(2, 5):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
+                value += '・'
                 value += cell.value
-                value += '\n'
-        dstSheet.cell(row=row, column=1).value = value
+                value += '\r\n'
+        dstSheet.cell(row=dstColumn, column=3).value = value
+        dstSheet.cell(row=dstColumn, column=3).alignment = openpyxl.styles.Alignment(wrapText=True)
 
         value = ''
+        num = 1
         for column in range(6, 9):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
+                value += str(num)
+                value += '.'
                 value += cell.value
-                value += '\n'
-        dstSheet.cell(row=row, column=2).value = value
+                value += '\r\n'
+                num += 1
+        dstSheet.cell(row=dstColumn, column=4).value = value
+        dstSheet.cell(row=dstColumn, column=4).alignment = openpyxl.styles.Alignment(wrapText=True)
         
         value = ''
         for column in range(10, 13):
             cell = srcSheet.cell(row=row, column=column)
             if (cell.value != None):
+                value += '・'
                 value += cell.value
-                value += '\n'
-        dstSheet.cell(row=row, column=3).value = value
-    
+                value += '\r\n'
+        dstSheet.cell(row=dstColumn, column=5).value = value
+        dstSheet.cell(row=dstColumn, column=5).alignment = openpyxl.styles.Alignment(wrapText=True)
+        
+        dstColumn += 1
     dst.save('dust_test_data.xlsx')
 
 
